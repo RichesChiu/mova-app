@@ -7,8 +7,12 @@ struct LibraryDetailView: View {
     let stats: LibraryStats?
     let mediaItems: [MediaItemSummary]
     let imageRequest: (String?) -> URLRequest?
-    let loadSeasons: (Int) async -> [SeasonSummary]
-    let loadEpisodes: (Int) async -> [EpisodeSummary]
+    let loadMediaDetail: (Int) async throws -> MediaItemDetail
+    let loadEpisodeOutline: (Int) async throws -> SeriesEpisodeOutline
+    let loadCastMembers: (Int) async throws -> [MediaCastMember]
+    let loadMediaFiles: (Int) async throws -> [MediaFileInfo]
+    let loadAudioTracks: (Int) async throws -> [AudioTrackInfo]
+    let loadSubtitles: (Int) async throws -> [SubtitleFileInfo]
 
     private var movieItems: [MediaItemSummary] {
         mediaItems.filter { $0.mediaType == "movie" }
@@ -149,8 +153,12 @@ struct LibraryDetailView: View {
                             MediaItemDetailView(
                                 item: item,
                                 imageRequest: imageRequest,
-                                loadSeasons: loadSeasons,
-                                loadEpisodes: loadEpisodes
+                                loadMediaDetail: loadMediaDetail,
+                                loadEpisodeOutline: loadEpisodeOutline,
+                                loadCastMembers: loadCastMembers,
+                                loadMediaFiles: loadMediaFiles,
+                                loadAudioTracks: loadAudioTracks,
+                                loadSubtitles: loadSubtitles
                             )
                         } label: {
                             libraryMediaCard(item)

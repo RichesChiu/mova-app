@@ -11,8 +11,12 @@ struct MediaHomeView: View {
     let mediaItems: [MediaItemSummary]
     let isLoading: Bool
     let imageRequest: (String?) -> URLRequest?
-    let loadSeasons: (Int) async -> [SeasonSummary]
-    let loadEpisodes: (Int) async -> [EpisodeSummary]
+    let loadMediaDetail: (Int) async throws -> MediaItemDetail
+    let loadEpisodeOutline: (Int) async throws -> SeriesEpisodeOutline
+    let loadCastMembers: (Int) async throws -> [MediaCastMember]
+    let loadMediaFiles: (Int) async throws -> [MediaFileInfo]
+    let loadAudioTracks: (Int) async throws -> [AudioTrackInfo]
+    let loadSubtitles: (Int) async throws -> [SubtitleFileInfo]
     let onImport: () -> Void
     let onDeleteServer: () -> Void
     let onReload: () -> Void
@@ -80,8 +84,12 @@ struct MediaHomeView: View {
                                 stats: libraryStatsByID[library.id],
                                 mediaItems: libraryItemsByID[library.id] ?? [],
                                 imageRequest: imageRequest,
-                                loadSeasons: loadSeasons,
-                                loadEpisodes: loadEpisodes
+                                loadMediaDetail: loadMediaDetail,
+                                loadEpisodeOutline: loadEpisodeOutline,
+                                loadCastMembers: loadCastMembers,
+                                loadMediaFiles: loadMediaFiles,
+                                loadAudioTracks: loadAudioTracks,
+                                loadSubtitles: loadSubtitles
                             )
                         } label: {
                             ZStack(alignment: .bottomLeading) {
@@ -169,8 +177,12 @@ struct MediaHomeView: View {
                                 MediaItemDetailView(
                                     item: item,
                                     imageRequest: imageRequest,
-                                    loadSeasons: loadSeasons,
-                                    loadEpisodes: loadEpisodes
+                                    loadMediaDetail: loadMediaDetail,
+                                    loadEpisodeOutline: loadEpisodeOutline,
+                                    loadCastMembers: loadCastMembers,
+                                    loadMediaFiles: loadMediaFiles,
+                                    loadAudioTracks: loadAudioTracks,
+                                    loadSubtitles: loadSubtitles
                                 )
                             } label: {
                                 mediaItemCard(item)

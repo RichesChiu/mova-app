@@ -257,6 +257,102 @@ final class ContentViewModel: ObservableObject {
         }
     }
 
+    func loadMediaDetail(for mediaID: Int) async throws -> MediaItemDetail {
+        guard let token = KeychainTokenStore.shared.readToken() else {
+            throw AuthFlowError.sessionExpired
+        }
+        guard let baseURL = authService.normalizeBaseURL(from: serverAddress) else {
+            throw AuthFlowError.invalidURL
+        }
+
+        return try await mediaService.fetchMediaItemDetail(
+            baseURL: baseURL,
+            token: token,
+            tokenType: serverTokenType,
+            mediaID: mediaID
+        )
+    }
+
+    func loadEpisodeOutline(for mediaID: Int) async throws -> SeriesEpisodeOutline {
+        guard let token = KeychainTokenStore.shared.readToken() else {
+            throw AuthFlowError.sessionExpired
+        }
+        guard let baseURL = authService.normalizeBaseURL(from: serverAddress) else {
+            throw AuthFlowError.invalidURL
+        }
+
+        return try await mediaService.fetchEpisodeOutline(
+            baseURL: baseURL,
+            token: token,
+            tokenType: serverTokenType,
+            mediaID: mediaID
+        )
+    }
+
+    func loadCastMembers(for mediaID: Int) async throws -> [MediaCastMember] {
+        guard let token = KeychainTokenStore.shared.readToken() else {
+            throw AuthFlowError.sessionExpired
+        }
+        guard let baseURL = authService.normalizeBaseURL(from: serverAddress) else {
+            throw AuthFlowError.invalidURL
+        }
+
+        return try await mediaService.fetchCastMembers(
+            baseURL: baseURL,
+            token: token,
+            tokenType: serverTokenType,
+            mediaID: mediaID
+        )
+    }
+
+    func loadMediaFiles(for mediaID: Int) async throws -> [MediaFileInfo] {
+        guard let token = KeychainTokenStore.shared.readToken() else {
+            throw AuthFlowError.sessionExpired
+        }
+        guard let baseURL = authService.normalizeBaseURL(from: serverAddress) else {
+            throw AuthFlowError.invalidURL
+        }
+
+        return try await mediaService.fetchMediaFiles(
+            baseURL: baseURL,
+            token: token,
+            tokenType: serverTokenType,
+            mediaID: mediaID
+        )
+    }
+
+    func loadAudioTracks(for mediaFileID: Int) async throws -> [AudioTrackInfo] {
+        guard let token = KeychainTokenStore.shared.readToken() else {
+            throw AuthFlowError.sessionExpired
+        }
+        guard let baseURL = authService.normalizeBaseURL(from: serverAddress) else {
+            throw AuthFlowError.invalidURL
+        }
+
+        return try await mediaService.fetchAudioTracks(
+            baseURL: baseURL,
+            token: token,
+            tokenType: serverTokenType,
+            mediaFileID: mediaFileID
+        )
+    }
+
+    func loadSubtitles(for mediaFileID: Int) async throws -> [SubtitleFileInfo] {
+        guard let token = KeychainTokenStore.shared.readToken() else {
+            throw AuthFlowError.sessionExpired
+        }
+        guard let baseURL = authService.normalizeBaseURL(from: serverAddress) else {
+            throw AuthFlowError.invalidURL
+        }
+
+        return try await mediaService.fetchSubtitles(
+            baseURL: baseURL,
+            token: token,
+            tokenType: serverTokenType,
+            mediaFileID: mediaFileID
+        )
+    }
+
     func clearAlert() {
         alertMessage = nil
     }
