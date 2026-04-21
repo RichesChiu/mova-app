@@ -128,6 +128,7 @@ struct MediaHomeView: View {
                             }
                             .frame(width: 250, height: 238)
                             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                             .overlay {
                                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                                     .stroke(
@@ -135,11 +136,13 @@ struct MediaHomeView: View {
                                         lineWidth: library.id == selectedLibraryID ? 1.2 : 1
                                     )
                             }
-                            .onTapGesture {
-                                onSelectLibrary(library.id)
-                            }
                         }
                         .buttonStyle(.plain)
+                        .simultaneousGesture(
+                            TapGesture().onEnded {
+                                onSelectLibrary(library.id)
+                            }
+                        )
                     }
                 }
                 .padding(.horizontal, 2)
