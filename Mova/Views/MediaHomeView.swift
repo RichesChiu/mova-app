@@ -84,38 +84,50 @@ struct MediaHomeView: View {
                                 loadEpisodes: loadEpisodes
                             )
                         } label: {
-                            VStack(alignment: .leading, spacing: 10) {
-                                libraryCoverGrid(for: library)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 132)
-
-                                Text(library.name)
-                                    .font(.headline)
-                                    .foregroundStyle(.white)
-                                    .lineLimit(1)
-
-                                if let description = library.description, !description.isEmpty {
-                                    Text(description)
-                                        .font(.caption)
-                                        .foregroundStyle(.white.opacity(0.7))
-                                        .lineLimit(1)
-                                }
-
-                                Spacer()
-
-                                Text(countLabel(for: library))
-                                    .font(.caption2.weight(.semibold))
-                                    .foregroundStyle(.white.opacity(0.85))
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(.white.opacity(0.12), in: Capsule())
-                            }
-                            .frame(width: 250, height: 238, alignment: .leading)
-                            .padding(14)
-                            .background(
+                            ZStack(alignment: .bottomLeading) {
                                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                                     .fill(.ultraThinMaterial)
-                            )
+
+                                libraryCoverGrid(for: library)
+                                    .overlay {
+                                        LinearGradient(
+                                            colors: [
+                                                .clear,
+                                                Color.black.opacity(0.18),
+                                                Color.black.opacity(0.82)
+                                            ],
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        )
+                                    }
+
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Spacer()
+
+                                    Text(library.name)
+                                        .font(.headline)
+                                        .foregroundStyle(.white)
+                                        .lineLimit(1)
+
+                                    if let description = library.description, !description.isEmpty {
+                                        Text(description)
+                                            .font(.caption)
+                                            .foregroundStyle(.white.opacity(0.72))
+                                            .lineLimit(2)
+                                    }
+
+                                    Text(countLabel(for: library))
+                                        .font(.caption2.weight(.semibold))
+                                        .foregroundStyle(.white.opacity(0.9))
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(.white.opacity(0.14), in: Capsule())
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+                                .padding(16)
+                            }
+                            .frame(width: 250, height: 238)
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                             .overlay {
                                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                                     .stroke(
@@ -234,12 +246,13 @@ struct MediaHomeView: View {
         let spacing: CGFloat = 4
 
         return GeometryReader { proxy in
-            let cellSize = max(
+            let cellWidth = max(
                 12,
-                min(
-                    (proxy.size.width - CGFloat(sideCount - 1) * spacing) / CGFloat(sideCount),
-                    (proxy.size.height - CGFloat(sideCount - 1) * spacing) / CGFloat(sideCount)
-                )
+                (proxy.size.width - CGFloat(sideCount - 1) * spacing) / CGFloat(sideCount)
+            )
+            let cellHeight = max(
+                12,
+                (proxy.size.height - CGFloat(sideCount - 1) * spacing) / CGFloat(sideCount)
             )
 
             VStack(spacing: spacing) {
@@ -260,13 +273,13 @@ struct MediaHomeView: View {
                                         .foregroundStyle(.white.opacity(0.45))
                                 }
                             }
-                            .frame(width: cellSize, height: cellSize)
+                            .frame(width: cellWidth, height: cellHeight)
                             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                         }
                     }
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 
