@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct ContentView: View {
-    @StateObject private var viewModel = ContentViewModel()
+struct AppRootView: View {
+    @StateObject private var viewModel = AppRootViewModel()
 
     @State private var showServerImportSheet = false
     @State private var pendingDeletion: SourceType?
@@ -17,7 +17,7 @@ struct ContentView: View {
         NavigationStack {
             ZStack {
                 if viewModel.hasValidatedServer {
-                    MediaHomeView(
+                    HomeView(
                         libraries: viewModel.libraries,
                         libraryPreviewItems: viewModel.libraryPreviewItems,
                         libraryItemsByID: viewModel.libraryItemsByID,
@@ -147,5 +147,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    AppRootView()
 }

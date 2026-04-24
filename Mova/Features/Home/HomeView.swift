@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 import ImageIO
 
-struct MediaHomeView: View {
+struct HomeView: View {
     let libraries: [LibrarySummary]
     let libraryPreviewItems: [Int: [MediaItemSummary]]
     let libraryItemsByID: [Int: [MediaItemSummary]]

@@ -2,7 +2,7 @@ import Combine
 import Foundation
 
 @MainActor
-final class ContentViewModel: ObservableObject {
+final class AppRootViewModel: ObservableObject {
     @Published var serverAddress = ""
     @Published var serverUsername = ""
     @Published var serverTokenType = "Bearer"
