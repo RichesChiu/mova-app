@@ -1,11 +1,43 @@
+# macOS
 .DS_Store
-.repo-backups/
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
 
+# Local editor and IDE state
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Xcode local state and build output
 DerivedData/
 build/
-
+*.hmap
+*.ipa
+*.dSYM
+*.dSYM.zip
 *.xcuserstate
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
 xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
 
-.swiftpm/
+# Swift Package Manager
 .build/
+.swiftpm/
+
+# Logs and local environment
+*.log
+.env
+.env.*
+!.env.example
+
+# Local recovery backups
+.repo-backups/
