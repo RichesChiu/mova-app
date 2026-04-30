@@ -18,6 +18,7 @@ struct AppRootView: View {
             ZStack {
                 if viewModel.hasValidatedServer {
                     HomeView(
+                        serverUsername: viewModel.serverUsername,
                         libraries: viewModel.libraries,
                         libraryPreviewItems: viewModel.libraryPreviewItems,
                         libraryItemsByID: viewModel.libraryItemsByID,
@@ -131,10 +132,10 @@ struct AppRootView: View {
                     ProgressView()
                     Text("正在登录并获取 token...")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(MovaTheme.textSecondary)
                 }
                 .padding(18)
-                .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .background(MovaGlassBackground(cornerRadius: 16))
             }
     }
 

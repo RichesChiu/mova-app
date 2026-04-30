@@ -9,15 +9,7 @@ struct MediaDetailSectionShell<Content: View>: View {
 
     var body: some View {
         content
-            .padding(18)
-            .background(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(.ultraThinMaterial)
-            )
-            .overlay {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .stroke(Color.white.opacity(0.14), lineWidth: 1)
-            }
+            .movaGlassPanel(cornerRadius: 24, padding: 18)
     }
 }
 
@@ -42,11 +34,11 @@ struct MediaDetailSectionHeader<Trailing: View>: View {
                 Text(eyebrow.uppercased())
                     .font(.caption.weight(.semibold))
                     .tracking(1.6)
-                    .foregroundStyle(.white.opacity(0.58))
+                    .foregroundStyle(MovaTheme.textTertiary)
 
                 Text(title)
                     .font(.title3.weight(.semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(MovaTheme.textPrimary)
             }
 
             Spacer()
@@ -72,24 +64,18 @@ struct MediaDetailMetricCard: View {
             Text(title.uppercased())
                 .font(.caption.weight(.semibold))
                 .tracking(1.2)
-                .foregroundStyle(.white.opacity(0.45))
+                .foregroundStyle(MovaTheme.textMuted)
 
             Text(value)
                 .font(.headline.weight(.semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(MovaTheme.textPrimary)
+                .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .frame(minWidth: 160, alignment: .leading)
+        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
-        .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color.white.opacity(0.05))
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(Color.white.opacity(0.14), lineWidth: 1)
-        }
+        .background(MovaInsetBackground(cornerRadius: 18, fill: MovaTheme.controlFill, stroke: MovaTheme.panelStroke))
     }
 }
 
@@ -121,16 +107,16 @@ struct MediaDetailSelectableChip: View {
         Button(action: action) {
             Text(title)
                 .font(font)
-                .foregroundStyle(isSelected ? .white : .white.opacity(0.58))
+                .foregroundStyle(isSelected ? MovaTheme.textPrimary : MovaTheme.textTertiary)
                 .padding(.horizontal, horizontalPadding)
                 .padding(.vertical, verticalPadding)
                 .background(
                     Capsule()
-                        .fill(isSelected ? Color.white.opacity(0.08) : Color.clear)
+                        .fill(isSelected ? MovaTheme.controlFill : Color.clear)
                 )
                 .overlay {
                     Capsule()
-                        .stroke(Color.white.opacity(0.16), lineWidth: 1)
+                        .stroke(isSelected ? MovaTheme.panelStroke : MovaTheme.panelStrokeSubtle, lineWidth: 1)
                 }
         }
         .buttonStyle(.plain)
@@ -152,7 +138,7 @@ struct MediaCastMemberCard: View {
                 } else {
                     Image(systemName: "person.fill")
                         .font(.title2)
-                        .foregroundStyle(.white.opacity(0.35))
+                        .foregroundStyle(MovaTheme.textMuted)
                 }
             }
             .frame(width: 136, height: 176)
@@ -160,26 +146,19 @@ struct MediaCastMemberCard: View {
 
             Text(member.name)
                 .font(.headline.weight(.semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(MovaTheme.textPrimary)
                 .lineLimit(1)
 
             if let characterName = member.characterName, !characterName.isEmpty {
                 Text(characterName)
                     .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.68))
+                    .foregroundStyle(MovaTheme.textSecondary)
                     .lineLimit(2)
             }
         }
         .frame(width: 160, alignment: .leading)
         .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.white.opacity(0.04))
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .stroke(Color.white.opacity(0.12), lineWidth: 1)
-        }
+        .background(MovaInsetBackground(cornerRadius: 22, fill: MovaTheme.cardFill, stroke: MovaTheme.panelStrokeSubtle))
     }
 }
 
@@ -207,18 +186,18 @@ struct MediaTechnicalCard<Footer: View>: View {
                 Text(title.uppercased())
                     .font(.caption.weight(.semibold))
                     .tracking(1.4)
-                    .foregroundStyle(.white.opacity(0.56))
+                    .foregroundStyle(MovaTheme.textTertiary)
 
                 Text(subtitle)
                     .font(.headline.weight(.semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(MovaTheme.textPrimary)
                     .lineLimit(2)
             }
 
             if rows.isEmpty {
                 Text("没有可展示的技术字段。")
                     .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.72))
+                    .foregroundStyle(MovaTheme.textSecondary)
             } else {
                 VStack(alignment: .leading, spacing: 10) {
                     ForEach(Array(rows.enumerated()), id: \.offset) { entry in
@@ -227,13 +206,14 @@ struct MediaTechnicalCard<Footer: View>: View {
                             Text(row.0.uppercased())
                                 .font(.caption.weight(.semibold))
                                 .tracking(1.0)
-                                .foregroundStyle(.white.opacity(0.44))
+                                .foregroundStyle(MovaTheme.textMuted)
                                 .frame(width: 92, alignment: .leading)
 
                             Text(row.1)
                                 .font(.subheadline)
-                                .foregroundStyle(.white.opacity(0.84))
+                                .foregroundStyle(MovaTheme.textSecondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                 }
@@ -241,16 +221,9 @@ struct MediaTechnicalCard<Footer: View>: View {
 
             footer
         }
-        .frame(width: 320, alignment: .leading)
+        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.white.opacity(0.04))
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .stroke(Color.white.opacity(0.12), lineWidth: 1)
-        }
+        .background(MovaInsetBackground(cornerRadius: 22, fill: MovaTheme.cardFill, stroke: MovaTheme.panelStrokeSubtle))
     }
 }
 

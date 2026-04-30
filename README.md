@@ -1,6 +1,6 @@
 # Mova App
 
-当前仓库已经整理成单一 Xcode 工程根目录结构，方便直接在仓库根目录进行开发、运行和提交。
+当前仓库使用 Xcode 模板推荐的工程目录结构：`Mova.xcodeproj` 位于仓库根目录，`Mova/` 是应用源码目录。
 
 ## 目录结构
 
@@ -8,12 +8,11 @@
 mova-app/
   Mova.xcodeproj
   Mova/
+    AppRootView.swift
     MovaApp.swift
-    ContentView.swift
-    Models/
-    Services/
-    ViewModels/
-    Views/
+    AuthModels.swift
+    AuthService.swift
+    Media*.swift
     Assets.xcassets/
   API.md
   README.md
@@ -25,4 +24,4 @@ mova-app/
 - `Mova/`：应用源码目录
 - `API.md`：当前服务端 API 对接说明
 
-本地开发时，直接打开仓库根目录下的 `Mova.xcodeproj` 即可。
+本地开发时，直接打开 `Mova.xcodeproj` 即可。

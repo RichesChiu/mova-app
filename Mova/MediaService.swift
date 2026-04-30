@@ -3,6 +3,14 @@ import Foundation
 struct MediaService {
     private let authService = AuthService()
 
+    private func decodePayload<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
+        let envelope = try JSONDecoder().decode(APIEnvelope<T>.self, from: data)
+        guard let payload = envelope.data else {
+            throw AuthFlowError.invalidResponse
+        }
+        return payload
+    }
+
     func fetchLibraries(baseURL: URL, token: String, tokenType: String) async throws -> [LibrarySummary] {
         var request = URLRequest(url: authService.apiURL(baseURL: baseURL, apiPath: "/api/libraries"))
         request.httpMethod = "GET"
@@ -22,16 +30,7 @@ struct MediaService {
             throw AuthFlowError.serverUnreachable(statusCode: httpResponse.statusCode)
         }
 
-        if let envelope = try? JSONDecoder().decode(APIEnvelope<[LibrarySummary]>.self, from: data),
-           let payload = envelope.data {
-            return payload
-        }
-
-        if let direct = try? JSONDecoder().decode([LibrarySummary].self, from: data) {
-            return direct
-        }
-
-        throw AuthFlowError.invalidResponse
+        return try decodePayload([LibrarySummary].self, from: data)
     }
 
     func fetchMediaItems(
@@ -71,16 +70,7 @@ struct MediaService {
             throw AuthFlowError.serverUnreachable(statusCode: httpResponse.statusCode)
         }
 
-        if let envelope = try? JSONDecoder().decode(APIEnvelope<PagedMediaItems>.self, from: data),
-           let payload = envelope.data {
-            return payload
-        }
-
-        if let direct = try? JSONDecoder().decode(PagedMediaItems.self, from: data) {
-            return direct
-        }
-
-        throw AuthFlowError.invalidResponse
+        return try decodePayload(PagedMediaItems.self, from: data)
     }
 
     func fetchAllMediaItems(
@@ -124,15 +114,7 @@ struct MediaService {
                 throw AuthFlowError.serverUnreachable(statusCode: httpResponse.statusCode)
             }
 
-            let pageResult: PagedMediaItems
-            if let envelope = try? JSONDecoder().decode(APIEnvelope<PagedMediaItems>.self, from: data),
-               let payload = envelope.data {
-                pageResult = payload
-            } else if let direct = try? JSONDecoder().decode(PagedMediaItems.self, from: data) {
-                pageResult = direct
-            } else {
-                throw AuthFlowError.invalidResponse
-            }
+            let pageResult = try decodePayload(PagedMediaItems.self, from: data)
 
             allItems.append(contentsOf: pageResult.items)
             total = pageResult.total
@@ -165,7 +147,7 @@ struct MediaService {
             throw AuthFlowError.serverUnreachable(statusCode: httpResponse.statusCode)
         }
 
-        return try JSONDecoder().decode(MediaItemDetail.self, from: data)
+        return try decodePayload(MediaItemDetail.self, from: data)
     }
 
     func fetchEpisodeOutline(
@@ -190,7 +172,7 @@ struct MediaService {
             throw AuthFlowError.serverUnreachable(statusCode: httpResponse.statusCode)
         }
 
-        return try JSONDecoder().decode(SeriesEpisodeOutline.self, from: data)
+        return try decodePayload(SeriesEpisodeOutline.self, from: data)
     }
 
     func fetchCastMembers(
@@ -215,7 +197,7 @@ struct MediaService {
             throw AuthFlowError.serverUnreachable(statusCode: httpResponse.statusCode)
         }
 
-        return try JSONDecoder().decode([MediaCastMember].self, from: data)
+        return try decodePayload([MediaCastMember].self, from: data)
     }
 
     func fetchMediaFiles(
@@ -240,7 +222,7 @@ struct MediaService {
             throw AuthFlowError.serverUnreachable(statusCode: httpResponse.statusCode)
         }
 
-        return try JSONDecoder().decode([MediaFileInfo].self, from: data)
+        return try decodePayload([MediaFileInfo].self, from: data)
     }
 
     func fetchAudioTracks(
@@ -265,7 +247,7 @@ struct MediaService {
             throw AuthFlowError.serverUnreachable(statusCode: httpResponse.statusCode)
         }
 
-        return try JSONDecoder().decode([AudioTrackInfo].self, from: data)
+        return try decodePayload([AudioTrackInfo].self, from: data)
     }
 
     func fetchSubtitles(
@@ -290,7 +272,7 @@ struct MediaService {
             throw AuthFlowError.serverUnreachable(statusCode: httpResponse.statusCode)
         }
 
-        return try JSONDecoder().decode([SubtitleFileInfo].self, from: data)
+        return try decodePayload([SubtitleFileInfo].self, from: data)
     }
 
     func fetchSeasons(baseURL: URL, token: String, tokenType: String, mediaID: Int) async throws -> [SeasonSummary] {
@@ -310,14 +292,7 @@ struct MediaService {
             throw AuthFlowError.serverUnreachable(statusCode: httpResponse.statusCode)
         }
 
-        if let envelope = try? JSONDecoder().decode(APIEnvelope<[SeasonSummary]>.self, from: data),
-           let payload = envelope.data {
-            return payload
-        }
-        if let direct = try? JSONDecoder().decode([SeasonSummary].self, from: data) {
-            return direct
-        }
-        throw AuthFlowError.invalidResponse
+        return try decodePayload([SeasonSummary].self, from: data)
     }
 
     func fetchEpisodes(baseURL: URL, token: String, tokenType: String, seasonID: Int) async throws -> [EpisodeSummary] {
@@ -337,13 +312,6 @@ struct MediaService {
             throw AuthFlowError.serverUnreachable(statusCode: httpResponse.statusCode)
         }
 
-        if let envelope = try? JSONDecoder().decode(APIEnvelope<[EpisodeSummary]>.self, from: data),
-           let payload = envelope.data {
-            return payload
-        }
-        if let direct = try? JSONDecoder().decode([EpisodeSummary].self, from: data) {
-            return direct
-        }
-        throw AuthFlowError.invalidResponse
+        return try decodePayload([EpisodeSummary].self, from: data)
     }
 }

@@ -10,8 +10,7 @@ struct SourceSetupView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemBackground)
-                .ignoresSafeArea()
+            MovaPageBackground()
 
             if hasAnySource {
                 ScrollView {
@@ -28,6 +27,7 @@ struct SourceSetupView: View {
                         Button("继续导入", systemImage: "plus.circle") {
                             onImport()
                         }
+                        .foregroundStyle(MovaTheme.textSecondary)
                         .padding(.top, 10)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -35,30 +35,33 @@ struct SourceSetupView: View {
                 }
             } else {
                 VStack(spacing: 18) {
-                    Image(systemName: "internaldrive")
-                        .font(.system(size: 44, weight: .regular))
-                        .foregroundStyle(.secondary)
+                    Image("MovaLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 92, height: 92)
+                        .padding(18)
+                        .background(MovaGlassBackground(cornerRadius: 28))
+                        .shadow(color: MovaTheme.accentBlue.opacity(0.18), radius: 22, y: 10)
 
                     Text("还没有媒体来源")
                         .font(.title3.weight(.semibold))
+                        .foregroundStyle(MovaTheme.textPrimary)
 
                     Text("导入服务器信息后开始使用")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(MovaTheme.textSecondary)
 
                     Button {
                         onImport()
                     } label: {
-                        Label("导入媒体", systemImage: "tray.and.arrow.down")
-                            .font(.headline)
-                            .padding(.horizontal, 22)
-                            .padding(.vertical, 12)
-                            .background(Color.accentColor, in: Capsule())
-                            .foregroundStyle(.white)
+                        MovaGhostActionLabel(title: "导入媒体", systemImage: "tray.and.arrow.down")
                     }
+                    .buttonStyle(.plain)
                     .padding(.top, 6)
                 }
                 .multilineTextAlignment(.center)
+                .padding(24)
+                .movaGlassPanel(cornerRadius: 28, padding: 28)
                 .padding(24)
             }
         }

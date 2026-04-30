@@ -16,6 +16,7 @@
 
 # Xcode local state and build output
 DerivedData/
+.derived-data/
 build/
 *.hmap
 *.ipa

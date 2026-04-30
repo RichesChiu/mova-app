@@ -61,6 +61,31 @@ struct MediaItemDetailView: View {
         detail?.backdropPath
     }
 
+    private var metadataFacts: [(title: String, value: String)] {
+        var facts: [(String, String)] = []
+
+        if let year = selectedSeason?.year ?? detail?.year {
+            facts.append(("Year", "\(year)"))
+        }
+        if let genres = detail?.genres, !genres.isEmpty {
+            facts.append(("Genres", genres))
+        }
+        if let studio = detail?.studio, !studio.isEmpty {
+            facts.append(("Studio", studio))
+        }
+        if let selectedSeason {
+            facts.append(("Available Episodes", "\(availableEpisodeCount(in: selectedSeason))"))
+        }
+        if let country = detail?.country, !country.isEmpty {
+            facts.append(("Country", country))
+        }
+        if let imdbRating = detail?.imdbRating, !imdbRating.isEmpty {
+            facts.append(("IMDb", imdbRating))
+        }
+
+        return facts
+    }
+
     private var resourceSourceEpisode: SeriesOutlineEpisode? {
         guard mediaType == "series" else { return nil }
         return selectedSeason?.episodes
@@ -137,11 +162,7 @@ struct MediaItemDetailView: View {
 
     private var backgroundLayer: some View {
         ZStack {
-            LinearGradient(
-                colors: [Color(red: 0.02, green: 0.05, blue: 0.12), Color.black],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            MovaPageBackground(glowPosition: .trailing)
 
             if let request = imageRequest(backdropPath) {
                 AuthenticatedImageView(request: request)
@@ -151,20 +172,14 @@ struct MediaItemDetailView: View {
                     .overlay {
                         LinearGradient(
                             colors: [
-                                Color.black.opacity(0.34),
-                                Color.black.opacity(0.74),
-                                Color.black.opacity(0.94)
+                                MovaTheme.canvasBottom.opacity(0.34),
+                                MovaTheme.canvasBottom.opacity(0.74),
+                                MovaTheme.canvasBottom.opacity(0.94)
                             ],
                             startPoint: .top,
                             endPoint: .bottom
                         )
                     }
-            } else {
-                Circle()
-                    .fill(Color.cyan.opacity(0.12))
-                    .frame(width: 320)
-                    .blur(radius: 90)
-                    .offset(x: 120, y: -220)
             }
         }
         .ignoresSafeArea()
@@ -183,7 +198,7 @@ struct MediaItemDetailView: View {
         } label: {
             Label(title, systemImage: "chevron.left")
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.white.opacity(0.86))
+                .foregroundStyle(MovaTheme.textSecondary)
         }
         .buttonStyle(.plain)
     }
@@ -194,26 +209,27 @@ struct MediaItemDetailView: View {
                 .tint(.white)
             Text("正在加载媒体详情...")
                 .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.72))
+                .foregroundStyle(MovaTheme.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var heroSection: some View {
         ZStack(alignment: .bottomLeading) {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(.ultraThinMaterial)
+            MovaGlassBackground(cornerRadius: 28)
 
             if let request = imageRequest(backdropPath) {
                 AuthenticatedImageView(request: request)
                     .scaledToFill()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
                     .opacity(0.26)
                     .overlay {
                         LinearGradient(
                             colors: [
-                                Color.black.opacity(0.1),
-                                Color.black.opacity(0.52),
-                                Color.black.opacity(0.82)
+                                MovaTheme.canvasBottom.opacity(0.1),
+                                MovaTheme.canvasBottom.opacity(0.52),
+                                MovaTheme.canvasBottom.opacity(0.82)
                             ],
                             startPoint: .top,
                             endPoint: .bottom
@@ -222,46 +238,68 @@ struct MediaItemDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
             }
 
-            VStack(alignment: .leading, spacing: 18) {
-                HStack(alignment: .top, spacing: 16) {
-                    posterView
-
-                    VStack(alignment: .leading, spacing: 16) {
-                        mediaTypeBadge
-
-                        Text(displayTitle)
-                            .font(.system(size: 38, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
-                            .lineLimit(2)
-
-                        if mediaType == "series", !seasons.isEmpty {
-                            seasonPickerSection
-                        }
-
-                        metadataStrip
-
-                        if let displayOverview, !displayOverview.isEmpty {
-                            Text(displayOverview)
-                                .font(.body)
-                                .foregroundStyle(.white.opacity(0.78))
-                                .lineSpacing(4)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
+            ViewThatFits(in: .horizontal) {
+                heroContent(compact: false)
+                heroContent(compact: true)
             }
             .padding(18)
         }
-        .frame(maxWidth: .infinity, minHeight: 320, alignment: .leading)
-        .overlay {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.white.opacity(0.14), lineWidth: 1)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
+    private func heroContent(compact: Bool) -> some View {
+        if compact {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(alignment: .bottom, spacing: 14) {
+                    posterView(width: 118, height: 178, cornerRadius: 18)
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        mediaTypeBadge
+
+                        Text(displayTitle)
+                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                            .foregroundStyle(MovaTheme.textPrimary)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.78)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                if mediaType == "series", !seasons.isEmpty {
+                    seasonPickerSection
+                }
+
+                metadataStrip
+                overviewText(lineLimit: 6)
+            }
+        } else {
+            HStack(alignment: .top, spacing: 18) {
+                posterView(width: 188, height: 284, cornerRadius: 22)
+
+                VStack(alignment: .leading, spacing: 16) {
+                    mediaTypeBadge
+
+                    Text(displayTitle)
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .foregroundStyle(MovaTheme.textPrimary)
+                        .lineLimit(2)
+
+                    if mediaType == "series", !seasons.isEmpty {
+                        seasonPickerSection
+                    }
+
+                    metadataStrip
+                    overviewText(lineLimit: 5)
+                }
+                .frame(minWidth: 620, maxWidth: .infinity, alignment: .leading)
+            }
         }
     }
 
-    private var posterView: some View {
+    private func posterView(width: CGFloat, height: CGFloat, cornerRadius: CGFloat) -> some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .fill(.white.opacity(0.08))
 
             if let request = imageRequest(posterPath) {
@@ -272,27 +310,37 @@ struct MediaItemDetailView: View {
                     .foregroundStyle(.white.opacity(0.45))
             }
         }
-        .frame(width: 230, height: 392)
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .frame(width: width, height: height)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
     }
 
     private var mediaTypeBadge: some View {
-        HStack {
-            Spacer()
-            Text(mediaTypeLabel(mediaType))
-                .font(.caption.weight(.semibold))
-                .tracking(0.8)
-                .foregroundStyle(.white)
-            Spacer()
-        }
+        Text(mediaTypeLabel(mediaType))
+            .font(.caption.weight(.semibold))
+            .tracking(0.8)
+            .foregroundStyle(MovaTheme.textPrimary)
+            .frame(minWidth: 86)
         .padding(.vertical, 6)
+        .padding(.horizontal, 12)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(Color.white.opacity(0.06))
+                .fill(MovaTheme.controlFill)
         )
         .overlay {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                .stroke(MovaTheme.panelStrokeSubtle, lineWidth: 1)
+        }
+    }
+
+    @ViewBuilder
+    private func overviewText(lineLimit: Int) -> some View {
+        if let displayOverview, !displayOverview.isEmpty {
+            Text(displayOverview)
+                .font(.body)
+                .foregroundStyle(MovaTheme.textSecondary)
+                .lineSpacing(4)
+                .lineLimit(lineLimit)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
@@ -302,12 +350,12 @@ struct MediaItemDetailView: View {
                 Text("SEASON")
                     .font(.caption.weight(.semibold))
                     .tracking(1.6)
-                    .foregroundStyle(.white.opacity(0.45))
+                    .foregroundStyle(MovaTheme.textMuted)
 
                 if let selectedSeason {
                     Text(selectedSeasonLabel(for: selectedSeason))
                         .font(.title3.weight(.medium))
-                        .foregroundStyle(.white.opacity(0.8))
+                        .foregroundStyle(MovaTheme.textSecondary)
                 }
             }
 
@@ -330,30 +378,26 @@ struct MediaItemDetailView: View {
         }
     }
 
+    private var metadataColumns: [GridItem] {
+        [
+            GridItem(
+                .adaptive(minimum: 150, maximum: 240),
+                spacing: 10,
+                alignment: .topLeading
+            )
+        ]
+    }
+
+    @ViewBuilder
     private var metadataStrip: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 12) {
-                if let year = selectedSeason?.year {
-                    MediaDetailMetricCard(title: "Season Air Year", value: "\(year)")
-                }
-                if let genres = detail?.genres, !genres.isEmpty {
-                    MediaDetailMetricCard(title: "Genres", value: genres)
-                }
-                if let studio = detail?.studio, !studio.isEmpty {
-                    MediaDetailMetricCard(title: "Studio", value: studio)
-                }
-                if let selectedSeason {
-                    MediaDetailMetricCard(title: "Available Episodes", value: "\(availableEpisodeCount(in: selectedSeason))")
-                }
-                if let country = detail?.country, !country.isEmpty {
-                    MediaDetailMetricCard(title: "Country", value: country)
-                }
-                if let imdbRating = detail?.imdbRating, !imdbRating.isEmpty {
-                    MediaDetailMetricCard(title: "IMDb", value: imdbRating)
+        if !metadataFacts.isEmpty {
+            LazyVGrid(columns: metadataColumns, alignment: .leading, spacing: 10) {
+                ForEach(Array(metadataFacts.enumerated()), id: \.offset) { entry in
+                    MediaDetailMetricCard(title: entry.element.title, value: entry.element.value)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }
-        .scrollIndicators(.hidden)
     }
 
     private var episodesSection: some View {
@@ -395,17 +439,10 @@ struct MediaItemDetailView: View {
                 MediaDetailSectionHeader(eyebrow: "Cast", title: "Main Cast") {
                     Text("\(castMembers.count)")
                         .font(.headline.weight(.semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(MovaTheme.textPrimary)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 10)
-                        .background(
-                            Capsule()
-                                .fill(Color.white.opacity(0.04))
-                        )
-                        .overlay {
-                            Capsule()
-                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
-                        }
+                        .background(MovaInsetBackground(cornerRadius: 18, fill: MovaTheme.cardFill, stroke: MovaTheme.panelStrokeSubtle))
                 }
 
                 if isLoading && castMembers.isEmpty && castErrorMessage == nil {
@@ -443,17 +480,10 @@ struct MediaItemDetailView: View {
                     if let selectedMediaFile {
                         Text(selectedMediaFile.container?.uppercased() ?? "FILE")
                             .font(.headline.weight(.semibold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(MovaTheme.textPrimary)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 10)
-                            .background(
-                                Capsule()
-                                    .fill(Color.white.opacity(0.04))
-                            )
-                            .overlay {
-                                Capsule()
-                                    .stroke(Color.white.opacity(0.12), lineWidth: 1)
-                            }
+                            .background(MovaInsetBackground(cornerRadius: 18, fill: MovaTheme.cardFill, stroke: MovaTheme.panelStrokeSubtle))
                     }
                 }
 
@@ -490,8 +520,7 @@ struct MediaItemDetailView: View {
                         .scrollIndicators(.hidden)
                     }
 
-                    ScrollView(.horizontal) {
-                        HStack(alignment: .top, spacing: 14) {
+                    LazyVGrid(columns: technicalColumns, alignment: .leading, spacing: 14) {
                             if let selectedMediaFile {
                                 MediaTechnicalCard(
                                     title: "Video",
@@ -533,13 +562,20 @@ struct MediaItemDetailView: View {
                                     }
                                 }
                             }
-                        }
-                        .padding(.horizontal, 2)
                     }
-                    .scrollIndicators(.hidden)
                 }
             }
         }
+    }
+
+    private var technicalColumns: [GridItem] {
+        [
+            GridItem(
+                .adaptive(minimum: 260, maximum: 420),
+                spacing: 14,
+                alignment: .topLeading
+            )
+        ]
     }
 
     @ViewBuilder
@@ -633,8 +669,9 @@ struct MediaItemDetailView: View {
             Text(message)
                 .font(.subheadline)
                 .foregroundStyle(.white.opacity(0.74))
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .frame(width: 320, alignment: .leading)
+        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
@@ -725,10 +762,14 @@ struct MediaItemDetailView: View {
         .background(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(.ultraThinMaterial)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .fill(MovaTheme.panelFill.opacity(0.58))
+                }
         )
         .overlay {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(Color.white.opacity(0.14), lineWidth: 1)
+                .stroke(MovaTheme.panelStroke, lineWidth: 1)
         }
     }
 

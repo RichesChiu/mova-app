@@ -10,15 +10,16 @@ struct SourceCardView: View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.title3)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(MovaTheme.accentBlue)
                 .frame(width: 30)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.headline)
+                    .foregroundStyle(MovaTheme.textPrimary)
                 Text(detail)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(MovaTheme.textSecondary)
             }
 
             Spacer()
@@ -31,6 +32,6 @@ struct SourceCardView: View {
             .foregroundStyle(.red)
         }
         .padding(14)
-        .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .background(MovaInsetBackground(cornerRadius: 14, fill: MovaTheme.cardFill, stroke: MovaTheme.panelStrokeSubtle))
     }
 }

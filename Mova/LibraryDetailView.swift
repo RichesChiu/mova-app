@@ -52,19 +52,7 @@ struct LibraryDetailView: View {
     }
 
     private var backgroundLayer: some View {
-        LinearGradient(
-            colors: [Color(red: 0.02, green: 0.05, blue: 0.12), Color.black],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .overlay {
-            Circle()
-                .fill(Color.cyan.opacity(0.12))
-                .frame(width: 320)
-                .blur(radius: 90)
-                .offset(x: 160, y: -220)
-        }
-        .ignoresSafeArea()
+        MovaPageBackground(glowPosition: .trailing)
     }
 
     private var backButton: some View {
@@ -73,7 +61,7 @@ struct LibraryDetailView: View {
         } label: {
             Label("Back Home", systemImage: "chevron.left")
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.white.opacity(0.86))
+                .foregroundStyle(MovaTheme.textSecondary)
         }
         .buttonStyle(.plain)
     }
@@ -83,12 +71,12 @@ struct LibraryDetailView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(library.name)
                     .font(.system(size: 42, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(MovaTheme.textPrimary)
 
                 if let description = library.description, !description.isEmpty {
                     Text(description)
                         .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.72))
+                        .foregroundStyle(MovaTheme.textSecondary)
                 }
             }
 
@@ -119,32 +107,25 @@ struct LibraryDetailView: View {
             Text(title.uppercased())
                 .font(.caption.weight(.semibold))
                 .tracking(1.2)
-                .foregroundStyle(.white.opacity(0.46))
+                .foregroundStyle(MovaTheme.textMuted)
 
             Text(value)
                 .font(.headline.weight(.semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(MovaTheme.textPrimary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
         }
         .frame(width: 220, alignment: .leading)
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
-        .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color.white.opacity(0.04))
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(Color.white.opacity(0.14), lineWidth: 1)
-        }
+        .background(MovaInsetBackground(cornerRadius: 18, fill: MovaTheme.cardFill, stroke: MovaTheme.panelStroke))
     }
 
     private func mediaSection(title: String, items: [MediaItemSummary]) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             Text(title)
                 .font(.title3.weight(.semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(MovaTheme.textPrimary)
 
             ScrollView(.horizontal) {
                 LazyHStack(spacing: 14) {
@@ -178,11 +159,11 @@ struct LibraryDetailView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Media")
                 .font(.title3.weight(.semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(MovaTheme.textPrimary)
 
             Text("这个媒体库还没有扫描到内容。")
                 .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(MovaTheme.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
@@ -190,12 +171,7 @@ struct LibraryDetailView: View {
     }
 
     private var sectionBackground: some View {
-        RoundedRectangle(cornerRadius: 24, style: .continuous)
-            .fill(.ultraThinMaterial)
-            .overlay {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .stroke(Color.white.opacity(0.14), lineWidth: 1)
-            }
+        MovaGlassBackground(cornerRadius: 24)
     }
 
     private func libraryMediaCard(_ item: MediaItemSummary) -> some View {
@@ -208,25 +184,26 @@ struct LibraryDetailView: View {
                         .font(.caption2.weight(.semibold))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 5)
-                        .background(.white.opacity(0.08), in: Capsule())
+                        .foregroundStyle(MovaTheme.textSecondary)
+                        .background(MovaTheme.controlFill, in: Capsule())
 
                     Spacer()
 
                     if let year = item.year {
                         Text("\(year)")
                             .font(.headline.weight(.medium))
-                            .foregroundStyle(.white.opacity(0.62))
+                            .foregroundStyle(MovaTheme.textSecondary)
                     }
                 }
 
                 Text(item.title)
                     .font(.title3.weight(.semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(MovaTheme.textPrimary)
                     .lineLimit(1)
 
                 Text(item.overview ?? "")
                     .font(.body)
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(MovaTheme.textSecondary)
                     .lineLimit(4)
                     .multilineTextAlignment(.leading)
 
@@ -235,14 +212,7 @@ struct LibraryDetailView: View {
         }
         .frame(width: 360, height: 180, alignment: .leading)
         .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.white.opacity(0.03))
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .stroke(Color.white.opacity(0.12), lineWidth: 1)
-        }
+        .background(MovaInsetBackground(cornerRadius: 22, fill: MovaTheme.cardFillQuiet, stroke: MovaTheme.panelStrokeSubtle))
     }
 
     private func posterView(for item: MediaItemSummary) -> some View {
@@ -254,7 +224,7 @@ struct LibraryDetailView: View {
                 AuthenticatedImageView(request: request)
             } else {
                 Image(systemName: "film")
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(MovaTheme.textTertiary)
             }
         }
         .frame(width: 118, height: 148)
